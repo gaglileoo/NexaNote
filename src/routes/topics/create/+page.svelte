@@ -22,7 +22,7 @@
   </h1>
 
   <!-- Formular für das neue Thema. Methode POST, Bootstrap-Grid. -->
-  <form runes method="post" class="row g-2">
+  <form method="post" action="?/create" class="row g-2">
     <!-- Titel-Eingabefeld -->
     <div class="col-12">
       <label for="title" class="form-label">Titel</label>

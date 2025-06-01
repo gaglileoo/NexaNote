@@ -8,7 +8,7 @@
 <main class="container py-5">
   <h1 class="mb-4">Neue Note erstellen</h1>
 
-  <form runes method="post" class="mb-4">
+  <form method="post" action="?/createNote" class="mb-4">
     <div class="mb-3">
       <label for="title" class="form-label">Titel</label>
       <input

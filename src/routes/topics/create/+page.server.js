@@ -1,44 +1,35 @@
-import { createTopic } from '$lib/db/topics.js';
-import { redirect, fail } from '@sveltejs/kit';
+import db from '$lib/db/topics.js';      // Analog zum Movie-Beispiel
+import { redirect, fail } from "@sveltejs/kit";
 
-
-/** @type {import('./$types').PageServerLoad} */
-// Load-Funktion: Übergibt parentId (z. B. wenn man ein Unterthema anlegt)
+// Load-Funktion: parentId wird als prop übergeben (wie gehabt)
 export function load({ url }) {
   return {
     props: {
-      parentId: url.searchParams.get('parentId') ?? ''
+      parentId: url.searchParams.get("parentId") ?? ""
     }
   };
 }
 
-// Actions: Wird beim Abschicken des Formulars ausgeführt (POST)
+// Actions: Hier jetzt exakt wie bei den Movies – Action-Name "create"
 export const actions = {
-  default: async ({ request }) => {
-    // Formulardaten auslesen
-    const data        = await request.formData();
-    const title       = data.get('title')?.toString()       || '';
-    const description = data.get('description')?.toString() || '';
-    const type        = data.get('type')?.toString()        || '';
-    const parentId    = data.get('parentId') || null;
-    const color       = data.get('color')                    || '#ffffff';
+  create: async ({ request }) => {
+    const data = await request.formData();
+    let topic = {
+      title: data.get("title"),
+      description: data.get("description"),
+      type: data.get("type"),
+      parentId: data.get("parentId") || null,
+      color: data.get("color") || "#ffffff",
+      createdAt: new Date().toISOString()
+    };
 
-    // Validierung: Titel und Kategorie müssen ausgefüllt sein
-    if (!title || !type) {
-      return fail(400, { error: 'Titel und Kategorie sind erforderlich' });
+    // Validierung wie gehabt
+    if (!topic.title || !topic.type) {
+      return fail(400, { error: "Titel und Kategorie sind erforderlich" });
     }
 
-    // Thema in der Datenbank speichern
-    await createTopic({
-      title,
-      description,
-      type,
-      parentId,
-      createdAt: new Date().toISOString(),
-      color
-    });
-
-    // Nach dem Anlegen: Redirect zur Übersicht
-    throw redirect(303, '/topics');
+    await db.createTopic(topic);
+    // Optional: direkt zur Übersicht weiterleiten
+    throw redirect(303, "/topics");
   }
 };

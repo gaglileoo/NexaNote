@@ -1,30 +1,30 @@
-import { error, redirect, fail } from '@sveltejs/kit';
-import { getNote, deleteNote, updateNote } from '$lib/db/notes.js';
+import notesdb from '$lib/db/notes.js';
+import { redirect, fail, error } from '@sveltejs/kit';
 
-/** @type {import('./$types').PageServerLoad} */
 export async function load({ params }) {
-  const note = await getNote(params.id);
-  if (!note) throw error(404, 'Note nicht gefunden');
-  return { note };
+  return {
+    note: await notesdb.getNote(params.id)
+  };
 }
 
-/** @type {import('./$types').Actions} */
 export const actions = {
   update: async ({ request, params }) => {
-    const form = await request.formData();
-    const title = form.get('title')?.toString() || '';
-    const content = form.get('content')?.toString() || '';
-
-    if (!title) {
+    let form = await request.formData();
+    let note = {
+      _id: params.id,
+      title: form.get('title')?.toString() || '',
+      content: form.get('content')?.toString() || ''
+    };
+    if (!note.title) {
       return fail(400, { error: 'Titel ist erforderlich.' });
     }
-
-    await updateNote(params.id, { title, content });
+    await notesdb.updateNote(note);
     return { success: true };
   },
-  delete: async ({ params }) => {
-    const deletedId = await deleteNote(params.id);
-    if (!deletedId) throw error(500, 'Konnte Note nicht löschen');
+  delete: async ({ request }) => {
+    let form = await request.formData();
+    let id = form.get('id');
+    await notesdb.deleteNote(id);
     throw redirect(303, '/notes');
   }
 };

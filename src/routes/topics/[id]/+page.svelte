@@ -32,6 +32,27 @@
 
   // ======== State für Datei-Uploads =========
   let fileError = $state(null);     // Fehler beim Datei-Upload
+  let submitting = $state(false);
+
+  async function handleUpload(event) {
+      event.preventDefault();
+      submitting = true;
+      fileError = null;
+      let formData = new FormData(event.currentTarget);
+      // Optional: Topic-ID mitgeben, falls gebraucht
+      if (!formData.has('topicId') && data.topic?._id) {
+        formData.append('topicId', data.topic._id);
+      }
+
+      let res = await fetch('?/addFile', { method: 'POST', body: formData });
+      if (res.ok) {
+        window.location.reload();
+      } else {
+        let body = await res.json();
+        fileError = body.error || 'Upload fehlgeschlagen';
+        submitting = false;
+      }
+    }
 </script>
 
 <main class="container-lg mx-auto py-5" style="max-width: 1100px;">
@@ -70,7 +91,7 @@
             - Alle Felder sind mit State verbunden
             - Bootstrap Grid für Abstände/Responsivität
           -->
-          <form runes method="post" action="?/edit" class="row gy-2 gx-2 align-items-center">
+          <form method="post" action="?/edit" class="row gy-2 gx-2 align-items-center">
             <div class="col-12">
               <input id="editTitle" name="title" class="form-control" placeholder="Titel"
                      bind:value={editTitle} required style="max-width:350px;" />
@@ -107,7 +128,7 @@
         Formular zum Löschen des Themas:
         - Großer roter Button, um Thema endgültig zu entfernen
       -->
-      <form runes method="post" action="?/delete" class="mb-3">
+      <form method="post" action="?/delete" class="mb-3">
         <button type="submit" class="btn btn-danger w-100 btn-lg">Topic löschen</button>
       </form>
       <!-- 
@@ -156,7 +177,7 @@
                 {/if}
               </ul>
               <!-- Formular zum Hinzufügen einer neuen Aufgabe -->
-              <form runes method="post" action="?/addTask" class="d-flex gap-2">
+              <form method="post" action="?/addTask" class="d-flex gap-2">
                 <input name="title" class="form-control form-control-sm" placeholder="Aufgabe..."
                        style="max-width:120px;" bind:value={taskTitle} required />
                 <input name="dueDate" type="date" class="form-control form-control-sm"
@@ -188,7 +209,7 @@
                       <span class="small text-muted">{n.content}</span>
                     </div>
                     <!-- Button zum Löschen der Notiz -->
-                    <form runes method="post" action="?/deleteNote" class="ms-2">
+                    <form method="post" action="?/deleteNote" class="ms-2">
                       <input type="hidden" name="noteId" value={n._id} />
                       <button type="submit" class="btn btn-danger btn-sm" title="Löschen">
                         <span aria-hidden="true">&times;</span>
@@ -201,7 +222,7 @@
                 {/if}
               </ul>
               <!-- Formular zum Hinzufügen einer neuen Notiz -->
-              <form runes method="post" action="?/addNote" class="d-flex gap-2">
+              <form method="post" action="?/addNote" class="d-flex gap-2">
                 <input name="title" bind:value={noteTitle} class="form-control form-control-sm"
                        placeholder="Titel..." style="max-width:110px;" required />
                 <input name="content" bind:value={noteContent} class="form-control form-control-sm"
@@ -220,26 +241,46 @@
           <div class="card shadow-sm mb-4 rounded-4">
             <div class="card-body">
               <h5 class="card-title">Dateien</h5>
-              <!-- 
-                Liste aller Dateien:
-                - Jeder Eintrag zeigt Name (mit Downloadlink) und Upload-Datum
-              -->
+              <!-- Dateien anzeigen -->
               <ul class="list-group list-group-flush mb-2">
                 {#each files as f}
                   <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <a href={f.url} target="_blank" rel="noopener">{f.name}</a>
-                    <span class="text-muted small">{new Date(f.createdAt).toLocaleDateString('de-DE')}</span>
+                    <a href={"/uploads/" + f.filename} target="_blank" rel="noopener">
+                      {f.title || f.originalName}
+                    </a>
+                    <span class="text-muted small">
+                      {new Date(f.uploadedAt).toLocaleDateString('de-DE')}
+                    </span>
                   </li>
                 {/each}
                 {#if files.length === 0}
                   <li class="list-group-item text-muted">Keine Dateien hochgeladen.</li>
                 {/if}
               </ul>
+
               <!-- Formular zum Hinzufügen einer neuen Datei -->
-              <form runes method="post" action="?/addFile" enctype="multipart/form-data" class="d-flex gap-2">
-                <input type="file" name="file" class="form-control form-control-sm"
-                       style="max-width:180px;" required />
-                <button type="submit" class="btn btn-outline-primary btn-sm">Hochladen</button>
+              <form onsubmit={handleUpload} class="mb-4">
+                <div class="mb-3">
+                  <input
+                    type="text"
+                    name="title"
+                    class="form-control mb-2"
+                    placeholder="Datei-Titel"
+                    required
+                  />
+                  <input
+                    type="file"
+                    name="file"
+                    class="form-control"
+                    required
+                  />
+                </div>
+                <button type="submit" class="btn btn-primary" disabled={submitting}>
+                  {submitting ? 'Lädt …' : 'Datei hochladen'}
+                </button>
+                {#if fileError}
+                  <div class="alert alert-danger mt-3">{fileError}</div>
+                {/if}
               </form>
               <!-- Fehleranzeige für Datei-Upload -->
               {#if fileError}
@@ -265,7 +306,7 @@
                 {/each}
               </ul>
               <!-- Formular für neuen Kommentar -->
-              <form runes method="post" action="?/comment" class="d-flex gap-2">
+              <form method="post" action="?/comment" class="d-flex gap-2">
                 <textarea class="form-control form-control-sm" name="comment" rows="1"
                           placeholder="Kommentar..." style="max-width:280px;"
                           bind:value={comment} required></textarea>

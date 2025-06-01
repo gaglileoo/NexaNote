@@ -18,7 +18,7 @@
     <div class="alert alert-danger mb-4">{loadError}</div>
   {/if}
 
-  <form runes method="post" action="?/create" class="row g-2 align-items-end mb-4">
+  <form method="post" action="?/create" class="row g-2 align-items-end mb-4">
     <div class="col-md-6">
       <label for="title" class="form-label">Titel</label>
       <input

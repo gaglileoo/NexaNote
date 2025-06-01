@@ -1,18 +1,20 @@
+import db from '$lib/db/topics.js';
+import dbfiles from '$lib/db/files.js';
+import objdb from '$lib/db/objects.js';
 import { error, redirect } from '@sveltejs/kit';
-import { getTopic, deleteTopic, updateTopic, addComment } from '$lib/db/topics.js';
-import { getTasksByTopic, createTaskForTopic,deleteTask } from '$lib/db/objects.js';
-import { getNotesByTopic, createNoteForTopic, deleteNote } from '$lib/db/objects.js';
-import { getFilesByTopic, createFileForTopic } from '$lib/db/objects.js';
+import fs from 'fs';
+import path from 'path';
 
 export async function load({ params }) {
-  const topic = await getTopic(params.id);
+  let topic = await db.getTopic(params.id);
   if (!topic) throw error(404, 'Topic nicht gefunden');
 
-  // Diese Zeile holt die zugeordneten Aufgaben, Notizen, Dateien
-  const [tasks, notes, files] = await Promise.all([
-    getTasksByTopic(params.id),
-    getNotesByTopic(params.id),
-    getFilesByTopic(params.id)
+  // Holt die zugeordneten Aufgaben, Notizen, Dateien
+  let [tasks, notes, files] = await Promise.all([
+    objdb.getTasksByTopic(params.id),
+    objdb.getNotesByTopic(params.id),
+    // Holt alle Files, die zu dieser Topic gehören (gleiches Schema wie global)!
+    dbfiles.getFilesByTopic(params.id)
   ]);
 
   return { topic, tasks, notes, files };
@@ -20,22 +22,23 @@ export async function load({ params }) {
 
 export const actions = {
   delete: async ({ params }) => {
-    const deletedId = await deleteTopic(params.id);
+    let deletedId = await db.deleteTopic(params.id);
     if (!deletedId) throw error(500, 'Konnte Topic nicht löschen');
     throw redirect(303, '/topics');
   },
+
   edit: async ({ request, params }) => {
-    const data = await request.formData();
-    const title = data.get('title')?.toString() || '';
-    const description = data.get('description')?.toString() || '';
-    const type = data.get('type')?.toString() || '';
-    const color = data.get('color') || '#ffffff';
+    let data = await request.formData();
+    let title = data.get('title')?.toString() || '';
+    let description = data.get('description')?.toString() || '';
+    let type = data.get('type')?.toString() || '';
+    let color = data.get('color') || '#ffffff';
 
     if (!title || !type) {
       return { error: 'Titel und Kategorie sind erforderlich' };
     }
 
-    await updateTopic(params.id, {
+    await db.updateTopic(params.id, {
       title,
       description,
       type,
@@ -45,66 +48,79 @@ export const actions = {
 
     return { success: true };
   },
+
   comment: async ({ request, params }) => {
-    const data = await request.formData();
-    const text = data.get('comment')?.toString();
+    let data = await request.formData();
+    let text = data.get('comment')?.toString();
     if (!text) return { error: 'Kommentar darf nicht leer sein' };
 
-    await addComment(params.id, {
+    await db.addComment(params.id, {
       text,
       createdAt: new Date().toISOString()
     });
     return { success: true };
   },
 
-  // === NEU: TASK ===
-addTask: async ({ request, params }) => {
-  const data = await request.formData();
-  const title = data.get('title')?.toString();
-  const dueDate = data.get('dueDate')?.toString();
-  if (!title || !dueDate) return { error: 'Titel und Datum sind erforderlich' };
-  await createTaskForTopic(params.id, { title, dueDate });
-  return { success: true };
-},
-deleteTask: async ({ request }) => {
-  const data = await request.formData();
-  const taskId = data.get('taskId');
-  if (taskId) await deleteTask(taskId); // deine deleteTask-Funktion aus der DB
-  return { success: true };
-},
-
-// === NEU: NOTE ===
-  addNote: async ({ request, params }) => {
-  const data = await request.formData();
-  const title = data.get('title')?.toString();
-  const content = data.get('content')?.toString();
-  if (!content) return { error: 'Notiz darf nicht leer sein' };
-  await createNoteForTopic(params.id, { title, content });
-  return { success: true };
-},
-
-
-  // ... andere Actions
-  deleteNote: async ({ request }) => {
-    const data = await request.formData();
-    const noteId = data.get('noteId');
-    if (!noteId) return { error: 'ID fehlt' };
-
-    await deleteNote(noteId);
+  // === TASK ===
+  addTask: async ({ request, params }) => {
+    let data = await request.formData();
+    let title = data.get('title')?.toString();
+    let dueDate = data.get('dueDate')?.toString();
+    if (!title || !dueDate) return { error: 'Titel und Datum sind erforderlich' };
+    await objdb.createTaskForTopic(params.id, { title, dueDate });
+    return { success: true };
+  },
+  deleteTask: async ({ request }) => {
+    let data = await request.formData();
+    let taskId = data.get('taskId');
+    if (taskId) await objdb.deleteTask(taskId);
     return { success: true };
   },
 
+  // === NOTE ===
+  addNote: async ({ request, params }) => {
+    let data = await request.formData();
+    let title = data.get('title')?.toString();
+    let content = data.get('content')?.toString();
+    if (!content) return { error: 'Notiz darf nicht leer sein' };
+    await objdb.createNoteForTopic(params.id, { title, content });
+    return { success: true };
+  },
+  deleteNote: async ({ request }) => {
+    let data = await request.formData();
+    let noteId = data.get('noteId');
+    if (!noteId) return { error: 'ID fehlt' };
+    await objdb.deleteNote(noteId);
+    return { success: true };
+  },
 
-
-  // === NEU: FILE ===
+  // === FILE ===
   addFile: async ({ request, params }) => {
-    const data = await request.formData();
-    const file = data.get('file');
-    if (!file) return { error: 'Keine Datei ausgewählt' };
-    // Beispiel: Du speicherst das File woanders und bekommst eine URL zurück
-    // Hier eine Dummy-Implementierung (ersetze mit echter Logik!):
-    const url = `/uploads/${file.name}`; // Oder deinen echten Upload-Prozess
-    await createFileForTopic(params.id, { name: file.name, url });
+    let data = await request.formData();
+    let file = data.get('file');
+    let title = data.get('title')?.toString() || file?.name;
+
+    if (!file || !(file instanceof File)) return { error: 'Keine Datei ausgewählt' };
+
+    let uploadsDir = path.join(process.cwd(), 'static', 'uploads');
+    if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+
+    let filename = `${Date.now()}-${file.name}`;
+    let filePath = path.join(uploadsDir, filename);
+    let buffer = await file.arrayBuffer();
+    fs.writeFileSync(filePath, Buffer.from(buffer));
+
+    // **Hier exakt dieselbe Feldstruktur wie global, + topicId**
+    await dbfiles.saveFileMeta({
+      filename,                   // wie in globaler Upload-Logik
+      originalName: file.name,    // wie in globaler Upload-Logik
+      mimeType: file.type,        // wie in globaler Upload-Logik
+      size: file.size,            // wie in globaler Upload-Logik
+      topicId: params.id,         // NUR für Zuordnung zur Topic
+      title,                      // Optionaler Titel aus Formular
+      uploadedAt: new Date()
+    });
+
     return { success: true };
   }
 };

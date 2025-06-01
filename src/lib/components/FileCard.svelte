@@ -9,6 +9,11 @@
         <i class="bi bi-file-earmark me-1"></i>
         {file.originalName}
       </h6>
+      {#if file.title}
+        <div class="text-primary small mb-1" style="font-weight:600">
+          Titel: {file.title}
+        </div>
+      {/if}
       <small class="text-muted">
         {new Date(file.uploadedAt).toLocaleString('de-DE')}
         &ndash; {Math.round(file.size/1024)} KB

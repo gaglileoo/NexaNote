@@ -1,13 +1,26 @@
-import { getNotes } from '$lib/db/notes.js';
+import notesdb from '$lib/db/notes.js';
 
-/** @type {import('./$types').PageServerLoad} */
 export async function load() {
-  try {
-    const notes = await getNotes();
-    console.log('[SERVER] notes geladen:', notes.length);
-    return { notes };
-  } catch (err) {
-    console.error('[SERVER] Fehler beim Laden der Notes:', err);
-    return { notes: [], error: 'Konnte Notes nicht laden' };
-  }
+  return {
+    notes: await notesdb.getNotes()
+  };
 }
+
+export const actions = {
+  // Beispiel: Notiz anlegen
+  createNote: async ({ request }) => {
+    let data = await request.formData();
+    let note = {
+      title: data.get("title"),
+      content: data.get("content"),
+      topicId: data.get("topicId") || undefined
+    };
+    await notesdb.createNote(note);
+  },
+  // Beispiel: Notiz löschen
+  deleteNote: async ({ request }) => {
+    let data = await request.formData();
+    let id = data.get("id");
+    await notesdb.deleteNote(id);
+  }
+};

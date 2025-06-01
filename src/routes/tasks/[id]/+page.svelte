@@ -79,7 +79,7 @@
    <section class="mt-5">
     <h2>Kommentare</h2>
     <!-- Kommentar-Form -->
-    <form runes method="post" action="?/comment" class="mb-3">
+    <form method="post" action="?/comment" class="mb-3">
       <div class="mb-2">
         <textarea
           name="text"

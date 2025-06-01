@@ -11,8 +11,7 @@ const filesCol = db.collection("files");
 
 // =========== TASKS ===================
 
-/** Neue Task global oder für Topic anlegen */
-export async function createTask({ title, dueDate, completed = false, topicId }) {
+async function createTask({ title, dueDate, completed = false, topicId }) {
   const doc = {
     title,
     dueDate: dueDate ? new Date(dueDate) : null,
@@ -25,13 +24,11 @@ export async function createTask({ title, dueDate, completed = false, topicId })
   return res.insertedId.toString();
 }
 
-/** Speziell für Topic */
-export async function createTaskForTopic(topicId, { title, dueDate, completed = false }) {
+async function createTaskForTopic(topicId, { title, dueDate, completed = false }) {
   return await createTask({ title, dueDate, completed, topicId });
 }
 
-/** Alle Tasks zu Topic als Array */
-export async function getTasksByTopic(topicId) {
+async function getTasksByTopic(topicId) {
   const docs = await tasksCol.find({ topicId: new ObjectId(topicId) }).toArray();
   return docs.map(task => ({
     ...task,
@@ -54,8 +51,7 @@ export async function getTasksByTopic(topicId) {
   }));
 }
 
-/** Alle Tasks global */
-export async function getTasks() {
+async function getTasks() {
   const docs = await tasksCol.find().sort({ createdAt: -1 }).toArray();
   return docs.map(task => ({
     ...task,
@@ -78,8 +74,7 @@ export async function getTasks() {
   }));
 }
 
-/** Einzelne Task */
-export async function getTask(id) {
+async function getTask(id) {
   const doc = await tasksCol.findOne({ _id: new ObjectId(id) });
   if (!doc) return null;
   return {
@@ -103,8 +98,7 @@ export async function getTask(id) {
   };
 }
 
-/** Task updaten */
-export async function updateTask(id, { title, dueDate, completed }) {
+async function updateTask(id, { title, dueDate, completed }) {
   await tasksCol.updateOne(
     { _id: new ObjectId(id) },
     {
@@ -117,14 +111,12 @@ export async function updateTask(id, { title, dueDate, completed }) {
   );
 }
 
-/** Task löschen */
-export async function deleteTask(id) {
+async function deleteTask(id) {
   const res = await tasksCol.deleteOne({ _id: new ObjectId(id) });
   return res.deletedCount > 0;
 }
 
-/** Kommentar an Task anhängen */
-export async function addCommentToTask(taskId, { text }) {
+async function addCommentToTask(taskId, { text }) {
   const comment = {
     _id: new ObjectId(),
     text,
@@ -143,7 +135,7 @@ export async function addCommentToTask(taskId, { text }) {
 
 // =========== NOTES ===================
 
-export async function createNoteForTopic(topicId, { title, content }) {
+async function createNoteForTopic(topicId, { title, content }) {
   const res = await notesCol.insertOne({
     topicId: new ObjectId(topicId),
     title,
@@ -153,7 +145,7 @@ export async function createNoteForTopic(topicId, { title, content }) {
   return res.insertedId.toString();
 }
 
-export async function getNotesByTopic(topicId) {
+async function getNotesByTopic(topicId) {
   const docs = await notesCol.find({ topicId: new ObjectId(topicId) }).toArray();
   return docs.map(doc => ({
     ...doc,
@@ -165,7 +157,7 @@ export async function getNotesByTopic(topicId) {
   }));
 }
 
-export async function getAllNotes() {
+async function getAllNotes() {
   const docs = await notesCol.find({}).toArray();
   return docs.map(doc => ({
     ...doc,
@@ -177,7 +169,7 @@ export async function getAllNotes() {
   }));
 }
 
-export async function updateNote(id, update) {
+async function updateNote(id, update) {
   const res = await notesCol.updateOne(
     { _id: new ObjectId(id) },
     { $set: { ...update, updatedAt: new Date() } }
@@ -185,14 +177,14 @@ export async function updateNote(id, update) {
   return res.modifiedCount > 0;
 }
 
-export async function deleteNote(id) {
+async function deleteNote(id) {
   const res = await notesCol.deleteOne({ _id: new ObjectId(id) });
   return res.deletedCount > 0;
 }
 
 // =========== FILES ===================
 
-export async function createFileForTopic(topicId, { name, url }) {
+async function createFileForTopic(topicId, { name, url }) {
   const res = await filesCol.insertOne({
     topicId: new ObjectId(topicId),
     name,
@@ -202,7 +194,7 @@ export async function createFileForTopic(topicId, { name, url }) {
   return res.insertedId.toString();
 }
 
-export async function getFilesByTopic(topicId) {
+async function getFilesByTopic(topicId) {
   const docs = await filesCol.find({ topicId: new ObjectId(topicId) }).toArray();
   return docs.map(doc => ({
     ...doc,
@@ -214,7 +206,7 @@ export async function getFilesByTopic(topicId) {
   }));
 }
 
-export async function getAllFiles() {
+async function getAllFiles() {
   const docs = await filesCol.find({}).toArray();
   return docs.map(doc => ({
     ...doc,
@@ -226,7 +218,7 @@ export async function getAllFiles() {
   }));
 }
 
-export async function updateFile(id, update) {
+async function updateFile(id, update) {
   const res = await filesCol.updateOne(
     { _id: new ObjectId(id) },
     { $set: { ...update, updatedAt: new Date() } }
@@ -234,7 +226,31 @@ export async function updateFile(id, update) {
   return res.modifiedCount > 0;
 }
 
-export async function deleteFile(id) {
+async function deleteFile(id) {
   const res = await filesCol.deleteOne({ _id: new ObjectId(id) });
   return res.deletedCount > 0;
 }
+
+// =================== EXPORT DEFAULT ===================
+export default {
+  createTask,
+  createTaskForTopic,
+  getTasksByTopic,
+  getTasks,
+  getTask,
+  updateTask,
+  deleteTask,
+  addCommentToTask,
+
+  createNoteForTopic,
+  getNotesByTopic,
+  getAllNotes,
+  updateNote,
+  deleteNote,
+
+  createFileForTopic,
+  getFilesByTopic,
+  getAllFiles,
+  updateFile,
+  deleteFile
+};
