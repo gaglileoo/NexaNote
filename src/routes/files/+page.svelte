@@ -27,8 +27,10 @@
 </script>
 
 <main class="container py-5">
-  <h1 class="mb-4">Dateien verwalten</h1>
-
+  <h1 class="mb-4">
+  <i class="bi bi-folder me-2 text-info"></i>
+  Dateien verwalten
+  </h1>
   <!-- Upload-Form -->
   <form runes onsubmit={handleUpload} class="mb-4">
     <div class="mb-3">

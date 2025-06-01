@@ -19,7 +19,10 @@ let topics = $derived.by(() => {
 
 <main class="container py-5">
   <div class="d-flex justify-content-between align-items-center mb-4">
-    <h1>Themenübersicht</h1>
+    <h1>
+      <i class="bi bi-collection me-2 text-primary"></i>
+      Themenübersicht
+    </h1>
     <a href="/topics/create" class="btn btn-primary">Neues Thema</a>
   </div>
   <form class="mb-4 d-flex flex-wrap align-items-center gap-3">

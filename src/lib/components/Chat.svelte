@@ -89,6 +89,7 @@
         {#if isLoading}
           <span class="spinner-border spinner-border-sm"></span>
         {:else}
+         <i class="bi bi-send-fill"></i>
           Senden
         {/if}
       </button>

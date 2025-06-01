@@ -36,12 +36,22 @@
     <a href="/" class="d-none d-md-block mb-4 text-decoration-none">
       <h4 class="m-0">NexaNote</h4>
     </a>
-    <nav class="nav flex-column">
-      <a class="nav-link" href="/topics">Topics</a>
-      <a class="nav-link" href="/notes">Notizen</a>
-      <a class="nav-link" href="/files">Dateien</a>
-      <a class="nav-link" href="/tasks">Aufgaben</a>
-      <a class="nav-link" href="/chat">Chat</a>
+    <nav class="nav flex-column gap-1">
+      <a class="nav-link d-flex align-items-center" href="/topics">
+        <i class="bi bi-collection me-2 text-primary"></i> Topics
+      </a>
+      <a class="nav-link d-flex align-items-center" href="/notes">
+        <i class="bi bi-pencil-square me-2 text-success"></i> Notizen
+      </a>
+      <a class="nav-link d-flex align-items-center" href="/files">
+        <i class="bi bi-folder me-2 text-info"></i> Dateien
+      </a>
+      <a class="nav-link d-flex align-items-center" href="/tasks">
+        <i class="bi bi-check-circle me-2 text-warning"></i> Aufgaben
+      </a>
+      <a class="nav-link d-flex align-items-center" href="/chat">
+        <i class="bi bi-chat-dots me-2 text-purple"></i> Chat
+      </a>
     </nav>
   </div>
 </div>

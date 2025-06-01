@@ -9,7 +9,10 @@
 </script>
 
 <main class="container py-5">
-  <h1 class="mb-4">Aufgaben</h1>
+  <h1 class="mb-4">
+  <i class="bi bi-check-circle me-2 text-warning"></i>
+  Aufgaben
+</h1>
 
   {#if loadError}
     <div class="alert alert-danger mb-4">{loadError}</div>

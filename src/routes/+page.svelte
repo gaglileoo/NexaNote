@@ -56,24 +56,33 @@
     </div>
   </div>
 
-  <!-- Chat-Kachel als Highlight -->
-  <div class="row mt-4">
-    <div class="col-12">
-      <a href="/chat" class="card text-decoration-none bg-light border-0 hover-shadow">
-        <div class="card-body text-center p-4">
-          <div class="d-flex align-items-center justify-content-center">
-            <div class="icon-wrapper bg-purple bg-opacity-10 rounded-circle p-3 me-3" style="width: 60px; height: 60px;">
-              <i class="bi bi-chat-dots fs-3 text-purple"></i>
-            </div>
-            <div class="text-start">
-              <h5 class="mb-1">AI Chat</h5>
-              <p class="text-muted small mb-0">Interagiere mit unserem KI-Assistenten</p>
-            </div>
-            <i class="bi bi-arrow-right ms-auto fs-4 text-muted"></i>
+<!-- Chat & Video nebeneinander auf großen Bildschirmen -->
+<div class="row mt-4 align-items-center">
+  <!-- Chat-Kachel -->
+  <div class="col-12 col-md-6 mb-4 mb-md-0">
+    <a href="/chat" class="card text-decoration-none bg-light border-0 hover-shadow h-100">
+      <div class="card-body text-center p-4">
+        <div class="d-flex align-items-center justify-content-center">
+          <div class="icon-wrapper bg-purple bg-opacity-10 rounded-circle p-3 me-3" style="width: 60px; height: 60px;">
+            <i class="bi bi-chat-dots fs-3 text-purple"></i>
           </div>
+          <div class="text-start">
+            <h5 class="mb-1">AI Chat</h5>
+            <p class="text-muted small mb-0">Interagiere mit unserem KI-Assistenten</p>
+          </div>
+          <i class="bi bi-arrow-right ms-auto fs-4 text-muted"></i>
         </div>
-      </a>
-    </div>
+      </div>
+    </a>
   </div>
+  <!-- Video -->
+  <div class="col-12 col-md-6 d-flex justify-content-center">
+    <video controls style="max-width: 100%; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); width: 100%;">
+      <source src="/videos/intro.mp4" type="video/mp4" />
+      <track kind="captions" srclang="de" label="Deutsch" src="" default />
+      Dein Browser unterstützt das Video-Tag nicht.
+    </video>
+  </div>
+</div>
 </main>
 
