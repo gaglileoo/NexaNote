@@ -2,7 +2,12 @@
 <script>
   import Chat from '$lib/components/Chat.svelte';
 </script>
-<div class="container mt-4">
-  <h1 class="mb-4">Gemini Chat</h1>
+
+
+<main class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Gemini Chat</h1>
+    <!-- Platz für zukünftige Buttons -->
+  </div>
   <Chat />
-</div>
+</main>

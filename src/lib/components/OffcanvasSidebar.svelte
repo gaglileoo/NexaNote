@@ -26,10 +26,12 @@
 >
   <!-- MOBIL: Header mit Close-Button -->
   <div class="offcanvas-header d-md-none">
-    <h5 class="offcanvas-title">NexaNote</h5>
+    <a href="/" class="offcanvas-title text-decoration-none">
+      <h5 class="m-0">NexaNote</h5>
+    </a>
     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Schließen"></button>
-  </div>
-  <!-- SIDEBAR-INHALT -->
+  
+  </div>  <!-- SIDEBAR-INHALT -->
   <div class="offcanvas-body p-3 pt-4">
     <a href="/" class="d-none d-md-block mb-4 text-decoration-none">
       <h4 class="m-0">NexaNote</h4>
