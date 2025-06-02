@@ -1,9 +1,9 @@
-import tasksdb from "$lib/db/tasks.js";
+import db from "$lib/db/tasks.js";
 import { redirect, fail } from "@sveltejs/kit";
 
 export async function load() {
   return {
-    tasks: await tasksdb.getTasks()
+    tasks: await db.getTasks()
   };
 }
 
@@ -17,7 +17,17 @@ export const actions = {
       return fail(400, { error: "Titel und Datum sind erforderlich" });
     }
 
-    await tasksdb.createTask({ title, dueDate, completed: false });
+    await db.createTask({ title, dueDate, completed: false });
     throw redirect(303, "/tasks");
+  },
+  completeTask: async ({ request }) => {
+    let data = await request.formData();
+    let id = data.get("id");
+    await db.updateTask(id, { completed: true });
+  },
+  uncompleteTask: async ({ request }) => {
+    let data = await request.formData();
+    let id = data.get("id");
+    await db.updateTask(id, { completed: false });
   }
 };

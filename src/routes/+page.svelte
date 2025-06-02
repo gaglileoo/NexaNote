@@ -56,33 +56,35 @@
     </div>
   </div>
 
-<!-- Chat & Video nebeneinander auf großen Bildschirmen -->
-<div class="row mt-4 align-items-center">
-  <!-- Chat-Kachel -->
-  <div class="col-12 col-md-6 mb-4 mb-md-0">
-    <a href="/chat" class="card text-decoration-none bg-light border-0 hover-shadow h-100">
-      <div class="card-body text-center p-4">
-        <div class="d-flex align-items-center justify-content-center">
-          <div class="icon-wrapper bg-purple bg-opacity-10 rounded-circle p-3 me-3" style="width: 60px; height: 60px;">
-            <i class="bi bi-chat-dots fs-3 text-purple"></i>
-          </div>
-          <div class="text-start">
-            <h5 class="mb-1">AI Chat</h5>
-            <p class="text-muted small mb-0">Interagiere mit unserem KI-Assistenten</p>
-          </div>
-          <i class="bi bi-arrow-right ms-auto fs-4 text-muted"></i>
-        </div>
-      </div>
-    </a>
+<div class="container my-5">
+  <div class="text-center mb-4">
+    <h2 class="h4 text-secondary fw-normal">
+      Produktivität, die Spaß macht
+    </h2>
   </div>
-  <!-- Video -->
-  <div class="col-12 col-md-6 d-flex justify-content-center">
-    <video controls style="max-width: 100%; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); width: 100%;">
-      <source src="/videos/intro.mp4" type="video/mp4" />
-      <track kind="captions" srclang="de" label="Deutsch" src="" default />
-      Dein Browser unterstützt das Video-Tag nicht.
-    </video>
+  <div class="row g-4 align-items-stretch justify-content-center">
+    <!-- AI Chat Card -->
+    <div class="col-12 col-md-5 d-flex">
+      <a href="/chat" class="card flex-fill text-decoration-none shadow-sm" style="border-radius:18px;">
+        <div class="card-body text-center py-5 d-flex flex-column justify-content-center">
+          <i class="bi bi-chat-dots fs-1 text-primary mb-3"></i>
+          <h4 class="fw-bold mb-2">AI Chat</h4>
+          <p class="text-muted mb-0">Interagiere mit unserem KI-Assistenten</p>
+        </div>
+      </a>
+    </div>
+    <!-- Bild-Card -->
+    <div class="col-12 col-md-5 d-flex">
+      <div class="card flex-fill shadow-sm border-0 d-flex align-items-center justify-content-center" style="border-radius:18px;">
+        <img
+          src="/image.png"
+          alt="NexaNote Illustration"
+          style="max-width: 90%; max-height: 260px; border-radius:16px; object-fit: contain;"
+          class="img-fluid my-3 mx-auto d-block"        />
+      </div>
+    </div>
   </div>
 </div>
+
 </main>
 

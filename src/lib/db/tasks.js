@@ -7,23 +7,32 @@ const db = client.db("NotionLiteDB");
 
 // Get all tasks
 async function getTasks() {
-  const docs = await db
-    .collection("tasks")
-    .find()
-    .sort({ createdAt: -1 })
-    .toArray();
+  let tasks = [];
+  try {
+    const collection = db.collection("tasks");
+    tasks = await collection.find({}).toArray();
+    tasks.forEach((task) => {
+      task._id = task._id.toString();
 
-  return docs.map((task) => ({
-    ...task,
-    _id: task._id.toString(),
-    topicId: task.topicId ? task.topicId.toString() : undefined,
-    comments: (task.comments || []).map((c) => ({
-      ...c,
-      _id: c._id?.toString?.() ?? c._id
-    }))
-  }));
+      // Falls task.topicId ein ObjectId ist
+      if (task.topicId && typeof task.topicId !== 'string') {
+        task.topicId = task.topicId.toString();
+      }
+
+      // Alle Kommentare _id zu String machen
+      if (Array.isArray(task.comments)) {
+        task.comments = task.comments.map((c) => ({
+          ...c,
+          _id: c._id?.toString?.() ?? c._id
+        }));
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    // TODO: errorhandling
+  }
+  return tasks;
 }
-
 // Get one task by id
 async function getTask(id) {
   const doc = await db

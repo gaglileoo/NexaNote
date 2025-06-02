@@ -301,7 +301,7 @@
               <ul class="list-group list-group-flush mb-2">
                 {#each topic.comments ?? [] as c}
                   <li class="list-group-item">
-                    <small class="text-muted">{c.createdAt?.slice(0,16).replace('T',' ')}:</small> {c.text}
+                    <small class="text-muted">{new Date(c.createdAt).toLocaleString('de-DE', { dateStyle: 'short', timeStyle: 'short' })}:</small> {c.text}
                   </li>
                 {/each}
               </ul>

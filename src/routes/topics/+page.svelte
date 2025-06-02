@@ -2,19 +2,19 @@
   import TopicCard from '$lib/components/TopicCard.svelte';
   let { data } = $props();
 
-  // Filter-State
   let filterType = $state('');
 
-  // Genau wie bei Movies – derived Signal!
-let topics = $derived.by(() => {
-  if (filterType) {
-    return data.topics.filter(t => t.type === filterType);
-    
-  }
-  return data.topics;
-  
-});
-
+  // Nur Parent-Themen filtern und ggf. nach Typ weiterfiltern:
+  let topics = $derived.by(() => {
+    let parents = data.topics.filter(t => !t.parentId);
+    if (!filterType) return parents;
+    // Für maximale Sicherheit: Typ immer zu Kleinbuchstaben machen!
+    return parents.filter(
+      topic =>
+        typeof topic.type === 'string' &&
+        topic.type.toLowerCase() === filterType.toLowerCase()
+    );
+  });
 </script>
 
 <main class="container py-5">
@@ -50,9 +50,8 @@ let topics = $derived.by(() => {
       </button>
     {/if}
   </form>
-  {#if data.error}
-    <div class="alert alert-danger">{data.error}</div>
-  {:else if topics.length === 0}
+
+  {#if topics.length === 0}
     <div class="alert alert-info">Keine Themen gefunden.</div>
   {:else}
     <div class="row g-4">

@@ -8,18 +8,32 @@ const collection = db.collection("topics");
 
 // Holt alle Topics
 async function getTopics() {
-  const docs = await collection.find({}).toArray();
-  return docs.map(doc => ({
-    ...doc,
-    _id: doc._id.toString(),
-    parentId: doc.parentId ? doc.parentId.toString() : null,
-    comments: (doc.comments || []).map(c => ({
-      ...c,
-      _id: c._id?.toString?.() ?? c._id
-    }))
-  }));
-}
+  let topics = [];
+  try {
+    const collection = db.collection("topics");
+    topics = await collection.find({}).toArray();
+    topics.forEach((topic) => {
+      topic._id = topic._id.toString();
 
+      // Falls topic.parentId ein ObjectId ist
+      if (topic.parentId && typeof topic.parentId !== 'string') {
+        topic.parentId = topic.parentId.toString();
+      }
+
+      // Alle Kommentare _id zu String machen
+      if (Array.isArray(topic.comments)) {
+        topic.comments = topic.comments.map((c) => ({
+          ...c,
+          _id: c._id?.toString?.() ?? c._id
+        }));
+      }
+    });
+  } catch (error) {
+    console.log(error);
+    // TODO: errorhandling
+  }
+  return topics;
+}
 // Holt ein Topic per ID
 async function getTopic(id) {
   const doc = await collection.findOne({ _id: new ObjectId(id) });
