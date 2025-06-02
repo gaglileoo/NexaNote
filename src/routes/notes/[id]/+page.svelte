@@ -38,7 +38,8 @@
       <div class="alert alert-danger mt-3">{error}</div>
     {/if}
   </form>
-  <form runes method="post" action="?/delete" class="mb-3">
+  <form method="post" action="?/delete" class="mb-3">
+    <input type="hidden" name="id" value={note._id} />
     <button type="submit" class="btn btn-danger">Note löschen</button>
   </form>
   <p>
